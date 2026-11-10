@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  transcription-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./db:/app/db
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    container_name: transcription-bot
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./db:/var/lib/grafana/db:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=frser-sqlite-datasource
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  grafana-data:
