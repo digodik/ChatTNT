@@ -1,0 +1,14 @@
+.env
+cache/
+venv/
+*.log
+__pycache__/
+logs/
+paste.txt/
+*.pyc
+*.pyo
+*.pyd
+.Python
+db/
+*.db
+users.db
